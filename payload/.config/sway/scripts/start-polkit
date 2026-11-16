@@ -1,0 +1,11 @@
+#!/bin/sh
+# Full installations use LXQt; retain compatibility with an existing Debian agent.
+for agent in /usr/bin/lxqt-policykit-agent \
+    /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 \
+    /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1; do
+    if [ -x "$agent" ]; then
+        exec "$agent"
+    fi
+done
+printf '%s\n' 'No Polkit agent found; install lxqt-policykit.' >&2
+exit 1

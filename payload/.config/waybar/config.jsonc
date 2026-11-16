@@ -31,7 +31,7 @@
     "format": "🔊 {volume}%",
     "format-muted": "🔇 Muted",
     "on-click": "/usr/bin/pavucontrol",
-    "on-click-right": "@HOME@/.config/waybar/select-audio-output.py"
+    "on-click-right": "~/.config/waybar/select-audio-output.py"
   },
   "backlight": {
     "format": "Brightness {percent}%",
@@ -52,10 +52,10 @@
     "tooltip": false,
     "on-click": "/usr/bin/wdisplays",
     "menu": "on-click-right",
-    "menu-file": "@HOME@/.config/waybar/displays-menu.xml",
+    "menu-file": "~/.config/waybar/displays-menu.xml",
     "menu-actions": {
       "open": "/usr/bin/wdisplays",
-      "save": "@HOME@/.local/bin/save-kanshi-profile"
+      "save": "~/.local/bin/save-kanshi-profile"
     }
   }
 }

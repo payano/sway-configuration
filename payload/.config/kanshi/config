@@ -1,1 +1,1 @@
-include @HOME@/.config/kanshi/profiles/*.conf
+include ~/.config/sway-local/kanshi-profiles/*

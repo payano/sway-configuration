@@ -41,7 +41,7 @@ for output in outputs:
     )
 lines.append("}\n")
 
-directory = Path.home() / ".config/kanshi/profiles"
+directory = Path.home() / ".config/sway-local/kanshi-profiles"
 directory.mkdir(parents=True, exist_ok=True)
 target = directory / f"layout-{fingerprint}.conf"
 with tempfile.NamedTemporaryFile(mode="w", dir=directory, delete=False) as tmp:

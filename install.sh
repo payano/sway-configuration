@@ -27,7 +27,7 @@ fi
 case "$distro" in debian|arch) ;; *) echo "Unsupported distribution: $distro" >&2; exit 1 ;; esac
 mapfile -t packages < "packages.$distro"
 printf 'Distribution: %s\nPackages: %s\n' "$distro" "${packages[*]}"
-echo 'Configuration: Sway, Waybar, Dunst, Foot, Kanshi and helper scripts.'
+echo 'Symlinks: Sway, Waybar, Dunst, Foot, Kanshi directories and individual helper scripts.'
 echo 'Existing files will be backed up under ~/.local/state/sway-portable/backups/.'
 if ((dry)); then
   if [[ "$distro" = arch ]]; then echo 'Command: sudo pacman -Syu --needed <packages> (full system upgrade)';
@@ -39,8 +39,6 @@ if ((EUID == 0)); then echo 'Run without sudo; the script invokes sudo for syste
 if [[ "${XDG_CONFIG_HOME:-$HOME/.config}" != "$HOME/.config" ]]; then
   echo 'Custom XDG_CONFIG_HOME is not supported.' >&2; exit 1
 fi
-# Paths are substituted into shell and Sway commands; refuse unsafe characters.
-if [[ ! "$HOME" =~ ^/[a-zA-Z0-9_./-]+$ ]]; then echo 'HOME contains unsupported characters.' >&2; exit 1; fi
 if ((!config_only)); then
   command -v sudo >/dev/null || { echo 'Install sudo and grant this user sudo access first.' >&2; exit 1; }
   # Do not silently create competing network managers.
@@ -69,4 +67,8 @@ if ((!config_only)); then
     exit 1
   fi
 fi
-echo 'Done. Reboot, then select Sway at login, or run sway from a local TTY.'
+if ((config_only)); then
+  echo 'Links installed. Reload Sway or log out/in to apply configuration changes.'
+else
+  echo 'Done. Reboot, then select Sway at login, or run sway from a local TTY.'
+fi

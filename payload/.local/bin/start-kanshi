@@ -2,5 +2,5 @@
 if pgrep -u "$(id -u)" -x kanshi >/dev/null; then
     pkill -HUP -u "$(id -u)" -x kanshi
 else
-    exec /usr/bin/kanshi -c @HOME@/.config/kanshi/config
+    exec /usr/bin/kanshi -c ~/.config/kanshi/config
 fi

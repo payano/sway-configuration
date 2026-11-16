@@ -161,15 +161,15 @@ bindsym $mod+r mode "resize"
 
 
 # Match saved monitor layouts automatically.
-exec_always --no-startup-id @HOME@/.local/bin/start-kanshi
+exec_always --no-startup-id ~/.local/bin/start-kanshi
 
 # Chromium web notifications have a blank app ID and title in Sway.
-exec --no-startup-id @HOME@/.local/bin/float-chromium-notifications
+exec --no-startup-id ~/.local/bin/float-chromium-notifications
 
 # Capture all displays or select a region; save under Pictures/Screenshots.
-bindsym Print exec --no-startup-id @HOME@/.config/sway/scripts/screenshot all
-bindsym Shift+Print exec --no-startup-id @HOME@/.config/sway/scripts/screenshot region
-bindsym Ctrl+Alt+p exec --no-startup-id @HOME@/.config/sway/scripts/screenshot region-copy
+bindsym Print exec --no-startup-id ~/.config/sway/scripts/screenshot all
+bindsym Shift+Print exec --no-startup-id ~/.config/sway/scripts/screenshot region
+bindsym Ctrl+Alt+p exec --no-startup-id ~/.config/sway/scripts/screenshot region-copy
 
 # Lock after five idle minutes, turn displays off after six, and lock before suspending.
 bindsym Ctrl+Alt+l exec --no-startup-id swaylock -f
@@ -180,12 +180,12 @@ exec --no-startup-id swayidle -w \
 
 # Waybar is the panel.
 bar {
-    swaybar_command @HOME@/.config/sway/launch-bar.sh
+    swaybar_command ~/.config/sway/launch-bar.sh
 }
 
-exec --no-startup-id lxqt-policykit-agent
+exec --no-startup-id ~/.config/sway/scripts/start-polkit
 exec --no-startup-id dunst
 # Import session environment for portals, D-Bus services and GNOME Terminal.
 include /etc/sway/config.d/*
 # Machine-specific overrides (preserved on reinstall).
-include @HOME@/.config/sway/local.conf
+include ~/.config/sway-local/config

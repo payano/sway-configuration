@@ -1,164 +1,151 @@
-SWAY PORTABLE — Debian 13 och Arch Linux
+SWAY CONFIGURATION — Debian 13 och Arch Linux
 
-Paketet är extraherat från din Sway/Waybar-konfiguration den 16 november 2026.
-Det installerar skrivbordsmiljön på ett redan installerat Debian 13 eller Arch
-Linux. Kör som den vanliga användare som ska använda Sway, inte som root.
-Internet och fungerande sudo-behörighet behövs för paketinstallationen.
+Versionshanterad Sway/Waybar-miljö. De aktiva konfigurationskatalogerna är
+symboliska länkar till detta repo: ändringar i ~/.config/sway eller
+~/.config/dunst syns därför direkt i git diff.
 
-GIT OCH VERSIONERING
+INSTALLERA PÅ EN NY DATOR
 
-Detta är ett Git-repo. Konfigurationens källfiler finns under payload/:
+  git clone <repo-url> ~/git/sway-configuration
+  cd ~/git/sway-configuration
+  ./install.sh --dry-run
+  ./install.sh
 
-  payload/.config/sway/config
-  payload/.config/waybar/config.jsonc
-  payload/.config/waybar/style.css
-  payload/.config/dunst/dunstrc
-  payload/.config/foot/foot.ini
-  payload/.config/kanshi/config
-  payload/.local/bin/
+Kör som vanlig användare, inte med sudo framför skriptet. Systemet ska redan
+vara installerat, ha internet och sudo-behörighet. Installeraren använder
+apt på Debian 13 och pacman på Arch. På Arch körs en full systemuppdatering
+med pacman -Syu --needed. Pakethanterarens frågor och konflikter visas.
 
-Redigera filerna i repot och behåll platshållaren @HOME@ i sökvägar.
-Installeraren ersätter den med den aktuella användarens hemkatalog.
-Filerna kopieras vid installation; ändringar direkt under ~/.config synkas
-inte automatiskt tillbaka till repot. Lägg gemensamma ändringar i payload/.
-Behåll maskinspecifika ändringar i ~/.config/sway/local.conf.
+Ljudmiljön använder PipeWire, PulseAudio-kompatibilitet och WirePlumber.
+Befintlig PulseAudio kan behöva ersättas. NetworkManager och Bluetooth
+aktiveras för uppstart. Starta sedan om och välj Sway i inloggningsskärmen,
+eller kör sway från en lokal TTY. Grafikkortsdrivrutiner, firmware och
+inloggningshanterare ingår inte.
 
-Efter ändringar i repot:
+ENDAST LÄNKAR PÅ EN DATOR SOM REDAN HAR PROGRAMMEN
 
-  git diff
   ./install.sh --config-only
+
+Detta installerar inga paket och ändrar inga tjänster. Python 3 krävs.
+Korrekt installerade länkar lämnas orörda vid upprepad körning.
+Standardplaceringen ~/.config krävs; XDG_CONFIG_HOME med annan sökväg stöds ej.
+
+LÄNKADE SÖKVÄGAR
+
+  ~/.config/sway   -> <repo>/payload/.config/sway
+  ~/.config/waybar -> <repo>/payload/.config/waybar
+  ~/.config/dunst  -> <repo>/payload/.config/dunst
+  ~/.config/foot   -> <repo>/payload/.config/foot
+  ~/.config/kanshi -> <repo>/payload/.config/kanshi
+
+Hjälpskripten start-kanshi, save-kanshi-profile och float-chromium-notifications
+länkas individuellt från ~/.local/bin till payload/.local/bin.
+Övriga program och konfigurationskataloger lämnas orörda.
+
+Repot måste finnas kvar på disk. Om du flyttar det, kör installeraren med
+--config-only från den nya platsen för att uppdatera länkarna.
+Det gamla tar-arkivet från exporten innehåller den tidigare kopieringsvarianten;
+använd detta repo för den aktuella versionen.
+
+ÄNDRA, COMMITTA OCH SYNKA
+
+Redigera som vanligt ~/.config/sway/config eller ~/.config/dunst/dunstrc.
+Du kan även redigera motsvarande fil i payload/ direkt; det är samma fil.
+
+  cd ~/git/sway-configuration
+  git diff
   git add payload
   git commit -m "Uppdatera skrivbordskonfiguration"
+  git push
 
-Logga ut/in för att starta om hela miljön med den nya konfigurationen.
-Super+Shift+c laddar om Sway-konfigurationen, men startar inte om alla program.
+På den andra datorn, när lokala ändringar är committade:
 
-För att lägga repot på din Git-server, skapa ett tomt repo där och kör:
+  cd ~/git/sway-configuration
+  git pull --ff-only
+
+Ingen kopiering eller ominstallation behövs för ändringar i befintliga
+konfigurationsfiler. Ladda om berört program. Super+Shift+c laddar om Sway;
+logga ut/in för att starta om hela miljön. Dunst och andra processer läser
+inte nödvändigtvis om filerna automatiskt.
+Om paketlistorna har ändrats, kör ./install.sh igen.
+
+För att publicera repot: skapa ett tomt repo på din Git-server och kör:
 
   git remote add origin <repo-url>
   git push -u origin main
 
-På en annan dator:
+DATORNS EGNA INSTÄLLNINGAR (UTANFÖR GIT)
 
-  git clone <repo-url> sway-portable
-  cd sway-portable
-  ./install.sh --dry-run
-  ./install.sh
+  ~/.config/sway-local/config
+  ~/.config/sway-local/kanshi-profiles/
 
-För att hämta och tillämpa senare konfigurationsändringar:
+Här ligger lokala Sway-inställningar och sparade skärmlayouter. Vid första
+länkningen kopieras en eventuell äldre sway/local.conf och arbetsyterader
+av typen "workspace ... output ..." till den lokala konfigurationen.
+Befintliga kanshi/profiles kopieras också. Originalen finns kvar i backupen.
+Befintliga sway-local-filer skrivs inte över. Annan egen konfiguration kan
+hämtas från backupen och läggas i repot eller sway-local/config efter behov.
 
-  git pull --ff-only
-  ./install.sh --config-only
-
-Om paketlistorna har ändrats, kör ./install.sh i stället för --config-only.
-Inga lösenord, Bluetooth-parningar eller maskinspecifika skärmprofiler ingår.
-
-INSTALLERA FRÅN ARKIV (ALTERNATIV TILL GIT CLONE)
-
-  tar -xzf sway-portable.tar.gz
-  cd sway-portable
-  ./install.sh --dry-run
-  ./install.sh
-
-Starta om och välj Sway i inloggningsskärmen. Om du inte har en grafisk
-inloggningshanterare: logga in på en lokal TTY och kör sway.
-Ingen inloggningshanterare eller grafikkortsdrivrutin installeras av paketet.
-
-Distributionen identifieras automatiskt genom /etc/os-release.
-Debian: apt-get update och apt-get install.
-Arch: pacman -Syu --needed, vilket även uppdaterar hela systemet.
-Pakethanterarens egna frågor visas, inklusive eventuella paketkonflikter.
-Ljudmiljön använder PipeWire med PulseAudio-kompatibilitet och WirePlumber.
-En befintlig PulseAudio-installation kan därför behöva ersättas.
-
-FÖRHANDSGRANSKA / ENDAST KONFIGURATION
-
-  ./install.sh --dry-run --distro debian
-  ./install.sh --dry-run --distro arch
-  ./install.sh --config-only
-
---config-only kopierar konfigurationen och kräver python3, men installerar inga
-paket och ändrar inga tjänster. Använd bara detta när beroendena redan finns.
+På en ny dator: ordna skärmarna med wdisplays och välj Save current layout
+via högerklick på Waybars skärmikon. Profilerna sparas utanför repot.
+Waybar väljer bakgrundsbelysningsenhet automatiskt.
 
 FUNKTIONER
 
-* Waybar längst ned med arbetsytor, klocka, systemfält, ljud, ljusstyrka,
-  nätverk och batteri. Moduler för hårdvara som saknas kan vara dolda.
-* Wi-Fi: nm-applet i systemfältet. Klick på nätverkstexten öppnar anslutningar.
-* Bluetooth: Blueman i systemfältet.
+* Waybar längst ned: arbetsytor, klocka, systemfält, ljud, ljusstyrka,
+  nätverk och batteri. Hårdvaruberoende moduler kan vara dolda.
+* Wi-Fi via nm-applet, Bluetooth via Blueman.
 * Ljud: vänsterklick öppnar pavucontrol, högerklick väljer ljudutgång.
-* Skärmar: vänsterklick på skärmikonen öppnar wdisplays. Högerklick och
-  "Save current layout" sparar layouten för automatisk växling med Kanshi.
-* Svenskt tangentbord och dina befintliga Sway-kortkommandon.
+* Skärmar: vänsterklick öppnar wdisplays, högerklick låter dig spara layouten.
+* Svenskt tangentbord och befintliga Sway-kortkommandon.
 * Super+Enter: GNOME Terminal. Super+d: programstartare.
 * Print: skärmbild. Shift+Print: område. Ctrl+Alt+p: område till urklipp.
-* Ctrl+Alt+l: lås. Automatiskt lås efter 5 minuter och skärmavstängning efter 6.
-* Dunst-notiser och ditt skript för flytande Chromium-notiser.
-
-ANPASSNINGAR FÖR ANDRA DATORER
-
-Användarsökvägar skapas vid installationen. Inga referenser till den gamla
-användarens hemkatalog behöver redigeras. Hemkataloger med mellanslag eller
-shell-specialtecken stöds inte. Standardplacering ~/.config krävs.
-
-De gamla skärmportarna DP-8, DP-6 och eDP-1 och deras arbetsytemappning har
-inte aktiverats. Gamla skärmprofiler exporteras inte. Ställ in skärmarna i
-wdisplays och spara via panelen på den nya datorn. Befintliga Kanshi-profiler
-på måldatorn bevaras; se över dem om du installerar över en äldre miljö.
-
-Waybar väljer bakgrundsbelysningsenhet automatiskt i stället för att kräva
-intel_backlight. Gör eventuella maskinspecifika Sway-inställningar i:
-
-  ~/.config/sway/local.conf
-
-Den filen bevaras vid ominstallation. Övriga medföljande konfigurationsfiler
-ersätts efter säkerhetskopiering. Generell XDG-autostart har ersatts med
-explicit start av panelens program för att undvika dubbla applets. Egna
-autostartprogram kan läggas till i local.conf.
-
-NÄTVERK OCH TJÄNSTER
-
-NetworkManager och Bluetooth aktiveras för kommande uppstarter. Installeraren
-startar inte om nätverket under den pågående sessionen. Pakethanteraren kan
-själv starta nyinstallerade tjänster, särskilt på Debian.
-PipeWire-sockets och WirePlumber aktiveras för användaren.
-
-Om systemd-networkd, dhcpcd, ConnMan eller iwd körs avbryts full installation
-före paketändringar. Planera då övergången till NetworkManager lokalt på
-datorn; stäng inte av din enda nätverksanslutning blint. iwd kan även vara en
-avsiktlig NetworkManager-backend, så denna kontroll är konservativ.
-Befintlig Debian-konfiguration i /etc/network/interfaces kan också behöva
-anpassas om gränssnittet visas som "unmanaged" i nmcli device status.
-
-Wi-Fi-lösenord, VPN-hemligheter, Bluetooth-parningar, nyckelringar och andra
-konton exporteras inte. Anslut och para på nytt på måldatorn. Eventuella
-VPN-tillägg och hårdvaruspecifik firmware installeras separat vid behov.
+* Ctrl+Alt+l: lås. Automatiskt lås efter 5 minuter; skärmavstängning efter 6.
+* Dunst och hjälpskript för flytande Chromium-notiser.
 
 SÄKERHETSKOPIA OCH ÅTERSTÄLLNING
 
-Befintliga berörda filer säkerhetskopieras innan konfigurationen skrivs:
+Befintliga kataloger/filer flyttas till en unik backup innan länkarna skapas:
 
-  ~/.local/state/sway-portable/backups/<tid-och-unikt-id>/
+  ~/.local/state/sway-portable/backups/<id>/
 
-Installeraren skriver ut ett exakt återställningskommando, till exempel:
+Äldre konfiguration och extra filer i de ersatta katalogerna finns där.
+Installeraren skriver ut ett exakt återställningskommando:
 
   python3 deploy.py --restore "$HOME/.local/state/sway-portable/backups/<id>"
 
-Återställning tar bort filer som skapades av den installationen och lägger
-tillbaka tidigare filer. Senare ändringar i dessa filer skrivs över. Återställ
-flera installationer i omvänd ordning. Paket och systemtjänster återställs
-inte. Logga ut/in efter återställningen. Symlänkar i destinationskataloger
-avvisas för att inte oavsiktligt skriva i ett dotfiles-repository.
+Återställning tar bort de installerade länkarna och återställer originalen.
+Repot, ändringar i repot och sway-local bevaras. Paket och tjänster påverkas
+inte. Om någon ersatt en länk med en annan fil/katalog avbryts återställningen.
+Återställ flera installationer i omvänd ordning, och logga därefter ut/in.
+Backup från gamla kopieringsinstallationen återställs med deploy.py från
+commit d397e6a. Föräldrakataloger som själva är symlänkar avvisas.
 
-VERIFIERING
+NÄTVERK
 
-Utfört: Bash/sh/Python-syntax, båda distributionernas förhandsgranskning,
-installation i tillfällig hemkatalog, upprepad installation, bevarande av
-local.conf, återställning samt Sways konfigurationsvalidering på Debian.
-Ingen riktig paketinstallation har körts av exportarbetet. Arch-session och
-Bluetooth/Wi-Fi/ljud/skärmar måste funktionstestas på måldatorn.
+Full installation avbryts om systemd-networkd, dhcpcd, ConnMan eller iwd körs,
+så att konkurrerande nätverkshanterare inte införs automatiskt. iwd kan vara
+en avsiktlig NetworkManager-backend; kontrollen är konservativ. Planera i så
+fall migrationen lokalt eller använd --config-only när programmen finns.
+Debians /etc/network/interfaces kan behöva anpassas för gränssnitt som
+NetworkManager visar som unmanaged. Pakethanteraren kan starta installerade
+tjänster, även om skriptet endast aktiverar dem för kommande uppstarter.
 
-Efter installation, kontrollera exempelvis:
+Wi-Fi-lösenord, Bluetooth-parningar, VPN-hemligheter och konton ingår inte.
+Anslut och para på nytt på måldatorn. VPN-tillägg installeras separat.
+
+KONTROLLER
+
+  python3 -m unittest discover -s tests -v
+  ./install.sh --dry-run --distro debian
+  ./install.sh --dry-run --distro arch
+
+Testerna använder temporära kataloger och verifierar länkar, redigering genom
+länkar, upprepad installation, migration av lokala inställningar, rollback vid
+fel och återställning. Sway-konfigurationen har validerats på Debian.
+Ingen full Arch-installation eller hårdvarutest har gjorts.
+
+Efter installation kan du kontrollera:
 
   systemctl status NetworkManager bluetooth
   systemctl --user status pipewire pipewire-pulse wireplumber
@@ -166,12 +153,4 @@ Efter installation, kontrollera exempelvis:
   pactl info
   swaymsg -t get_outputs
 
-Paketnamn finns i packages.debian och packages.arch och kan granskas före
-installation. Installeraren använder officiella paketförråd, ingen AUR.
-Referenser:
-https://packages.debian.org/trixie/wmenu
-https://packages.debian.org/trixie/wdisplays
-https://packages.debian.org/trixie/lxqt-policykit
-https://archlinux.org/packages/extra/x86_64/wmenu/
-https://archlinux.org/packages/extra/x86_64/network-manager-applet/
-https://archlinux.org/packages/extra/x86_64/lxqt-policykit/
+Paketlistor: packages.debian och packages.arch. Officiella förråd, ingen AUR.
