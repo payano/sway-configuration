@@ -1,0 +1,37 @@
+#!/bin/sh
+set -eu
+
+mode=${1:-all}
+directory="$HOME/Pictures/Screenshots"
+mkdir -p -- "$directory"
+file="$directory/Screenshot-$(date +%Y-%m-%d_%H-%M-%S_%N).png"
+
+case "$mode" in
+    all)
+        grim "$file"
+        ;;
+    region|region-copy)
+        geometry=$(slurp) || exit 0
+        [ -n "$geometry" ] || exit 0
+        grim -g "$geometry" "$file"
+        ;;
+    *)
+        printf 'Usage: %s [all|region|region-copy]\n' "$0" >&2
+        exit 2
+        ;;
+esac
+
+if [ "$mode" = region-copy ]; then
+    if ! command -v wl-copy >/dev/null 2>&1; then
+        dunstify -u critical 'Screenshot saved, but wl-clipboard is missing' "$file" 2>/dev/null || true
+        exit 1
+    fi
+    wl-copy --type image/png < "$file"
+    message='Screenshot copied and saved'
+else
+    message='Screenshot saved'
+fi
+
+if command -v dunstify >/dev/null 2>&1; then
+    dunstify -t 2500 "$message" "$file"
+fi

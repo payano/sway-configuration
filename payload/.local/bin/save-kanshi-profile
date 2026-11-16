@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Save the current connected display arrangement as a kanshi profile."""
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+
+
+def identifier(output):
+    if output["name"].startswith("eDP-"):
+        return output["name"]
+    return '"{} {} {}"'.format(
+        output.get("make") or "Unknown",
+        output.get("model") or "Unknown",
+        output.get("serial") or "Unknown",
+    )
+
+
+outputs = json.loads(subprocess.check_output(["swaymsg", "-r", "-t", "get_outputs"]))
+outputs = sorted(outputs, key=lambda item: identifier(item))
+if not outputs:
+    raise SystemExit("No displays are connected")
+
+fingerprint = hashlib.sha256("|".join(identifier(o) for o in outputs).encode()).hexdigest()[:12]
+lines = [f"profile layout_{fingerprint} {{\n"]
+for output in outputs:
+    label = identifier(output)
+    if not output["active"]:
+        lines.append(f"    output {label} disable\n")
+        continue
+    mode = output["current_mode"]
+    rect = output["rect"]
+    refresh = mode["refresh"] / 1000
+    lines.append(
+        f"    output {label} enable mode {mode['width']}x{mode['height']}@{refresh:g}Hz"
+        f" position {rect['x']},{rect['y']} scale {output['scale']:g}"
+        f" transform {output['transform']}\n"
+    )
+lines.append("}\n")
+
+directory = Path.home() / ".config/kanshi/profiles"
+directory.mkdir(parents=True, exist_ok=True)
+target = directory / f"layout-{fingerprint}.conf"
+with tempfile.NamedTemporaryFile(mode="w", dir=directory, delete=False) as tmp:
+    tmp.writelines(lines)
+    temp_name = tmp.name
+os.replace(temp_name, target)
+
+subprocess.run(["pkill", "-HUP", "-u", str(os.getuid()), "-x", "kanshi"], check=False)
+subprocess.run(["dunstify", "Displays", "Layout saved for automatic switching"], check=False)
+print(target)

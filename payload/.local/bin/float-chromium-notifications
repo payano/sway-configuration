@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""Float Chromium notification toplevels that Sway would otherwise tile."""
+
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+
+def tree():
+    return json.loads(subprocess.check_output(["swaymsg", "-r", "-t", "get_tree"]))
+
+
+def find_workspace(node, target_id, workspace=None):
+    if node.get("type") == "workspace":
+        workspace = node
+    if node.get("id") == target_id:
+        return workspace
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        found = find_workspace(child, target_id, workspace)
+        if found is not None:
+            return found
+    return None
+
+
+def is_chromium_notification(window):
+    if window.get("app_id") != "" or window.get("name") not in (None, ""):
+        return False
+    geometry = window.get("geometry") or {}
+    width, height = geometry.get("width", 0), geometry.get("height", 0)
+    if not (250 <= width <= 600 and 50 <= height <= 350):
+        return False
+    pid = window.get("pid")
+    if not isinstance(pid, int) or pid <= 0:
+        return False
+    try:
+        return (Path("/proc") / str(pid) / "comm").read_text().strip() == "chromium"
+    except OSError:
+        return False
+
+
+def float_window(window, current_tree):
+    if not is_chromium_notification(window) or window.get("floating") != "auto_off":
+        return
+    window_id = window["id"]
+    geometry = window["geometry"]
+    workspace = find_workspace(current_tree, window_id)
+    if workspace is None:
+        move = "move position center"
+    else:
+        x = max(16, workspace["rect"]["width"] - geometry["width"] - 20)
+        move = f"move position {x} px 24 px"
+    commands = (
+        f"[con_id={window_id}] floating enable, "
+        f"resize set width {geometry['width']} px height {geometry['height']} px, "
+        + move
+    )
+    subprocess.run(["swaymsg", commands], stdout=subprocess.DEVNULL, check=False)
+
+
+def scan_existing():
+    current_tree = tree()
+
+    def visit(node):
+        if node.get("type") == "con":
+            float_window(node, current_tree)
+        for child in node.get("nodes", []) + node.get("floating_nodes", []):
+            visit(child)
+
+    visit(current_tree)
+
+
+scan_existing()
+if "--once" in sys.argv:
+    raise SystemExit(0)
+with subprocess.Popen(
+    ["swaymsg", "-m", "-t", "subscribe", '["window"]'],
+    stdout=subprocess.PIPE,
+    text=True,
+) as subscription:
+    for line in subscription.stdout:
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("change") != "new":
+            continue
+        window = event.get("container") or {}
+        if is_chromium_notification(window):
+            float_window(window, tree())
