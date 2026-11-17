@@ -73,7 +73,6 @@ def deploy(home):
             pending[rel] = source
     backup_base = home/'.local/state/sway-portable/backups'
     check_parent(home, backup_base/'placeholder')
-    # Preserve host-specific settings before moving any original directories.
     prepare_local(home)
     if not pending:
         print('All links already point to this repo; nothing to replace.')
