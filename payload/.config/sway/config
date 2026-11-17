@@ -130,7 +130,7 @@ exec --no-startup-id swayidle -w \
     before-sleep 'swaylock -f'
 
 bar {
-    swaybar_command ~/.config/sway/launch-bar.sh
+    swaybar_command waybar
 }
 
 exec --no-startup-id ~/.config/sway/scripts/start-polkit
