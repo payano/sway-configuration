@@ -27,4 +27,10 @@ Skärmlayout sparas via högerklick på Waybars skärmikon.
 Backup: ~/.local/state/sway-portable/backups/<id>/
 Återställ: python3 deploy.py --restore <backupkatalog>
 
+Pakethistorik per körning: ~/.local/state/sway-portable/packages/<id>/
+added-requested.txt listar nytillkomna valda paket; added.txt inkluderar beroenden.
+Före/efter-versioner, borttagna paket och ändrad explicit-status sparas också.
+Granska listorna före borttagning: paket kan senare behövas av andra program.
+Historiken gäller nya installationer, inte retroaktivt.
+
 Tester: python3 -m unittest discover -s tests

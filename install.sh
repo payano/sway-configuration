@@ -49,12 +49,8 @@ if ((!config_only)); then
     fi
   done
   sudo -v
-  if [[ "$distro" = debian ]]; then
-    sudo apt-get update
-    sudo apt-get install "${packages[@]}"
-  else
-    sudo pacman -Syu --needed "${packages[@]}"
-  fi
+  source ./package-history.sh
+  install_packages_logged "$distro" "${packages[@]}"
 fi
 command -v python3 >/dev/null || { echo 'python3 is required for --config-only.' >&2; exit 1; }
 python3 deploy.py
