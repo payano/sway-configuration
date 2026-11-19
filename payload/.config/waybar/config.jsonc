@@ -14,6 +14,9 @@
     "tray",
     "pulseaudio",
     "backlight",
+    "cpu",
+    "memory",
+    "disk",
     "network",
     "battery"
   ],
@@ -39,10 +42,16 @@
     "min-brightness": 1
   },
   "network": {
-    "format-wifi": "Wi-Fi {signalStrength}%",
-    "format-ethernet": "Ethernet",
+    "format-wifi": "Wi-Fi ↓{bandwidthDownBytes:>10} ↑{bandwidthUpBytes:>10}",
+    "format-ethernet": "LAN   ↓{bandwidthDownBytes:>10} ↑{bandwidthUpBytes:>10}",
     "format-disconnected": "Offline",
-    "on-click": "nm-connection-editor"
+    "on-click": "nm-connection-editor",
+    "interval": 2,
+    "tooltip-format-wifi": "{essid} · Signal {signalStrength}%\n{ifname}: {ipaddr}\nNed: {bandwidthDownBytes}\nUpp: {bandwidthUpBytes}",
+    "tooltip-format-ethernet": "{ifname}: {ipaddr}\nNed: {bandwidthDownBytes}\nUpp: {bandwidthUpBytes}",
+    "min-length": 32,
+    "max-length": 32,
+    "align": 0
   },
   "battery": {
     "format": "Battery {capacity}%"
@@ -57,5 +66,23 @@
       "open": "/usr/bin/wdisplays",
       "save": "~/.local/bin/save-kanshi-profile"
     }
+  },
+  "cpu": {
+    "interval": 2,
+    "format": "CPU {usage:2}%",
+    "tooltip-format": "Processor: {usage}%\nBelastning: {load}",
+    "on-click": "foot -e htop"
+  },
+  "memory": {
+    "interval": 2,
+    "format": "RAM {percentage}%",
+    "tooltip-format": "Minne: {used:.1f} / {total:.1f} GiB\nTillgängligt: {avail:.1f} GiB",
+    "on-click": "foot -e htop"
+  },
+  "disk": {
+    "interval": 30,
+    "path": "/",
+    "format": "Disk {percentage_used}%",
+    "tooltip-format": "Använt: {used} / {total}\nLedigt: {free}\nFilsystem: {path}"
   }
 }
