@@ -4,20 +4,21 @@
   "height": 28,
   "modules-left": [
     "sway/workspaces",
-    "sway/mode"
+    "sway/mode",
+    "custom/displays",
+    "tray",
+    "pulseaudio",
+    "backlight"
   ],
   "modules-center": [
     "clock"
   ],
   "modules-right": [
-    "custom/displays",
-    "tray",
-    "pulseaudio",
-    "backlight",
+    "network",
     "cpu",
     "memory",
     "disk",
-    "network",
+    "custom/disk-io",
     "battery"
   ],
   "sway/workspaces": {
@@ -49,9 +50,9 @@
     "interval": 2,
     "tooltip-format-wifi": "{essid} · Signal {signalStrength}%\n{ifname}: {ipaddr}\nNed: {bandwidthDownBytes}\nUpp: {bandwidthUpBytes}",
     "tooltip-format-ethernet": "{ifname}: {ipaddr}\nNed: {bandwidthDownBytes}\nUpp: {bandwidthUpBytes}",
-    "min-length": 32,
-    "max-length": 32,
-    "align": 0
+    "min-length": 29,
+    "max-length": 29,
+    "align": 1
   },
   "battery": {
     "format": "Battery {capacity}%"
@@ -82,7 +83,16 @@
   "disk": {
     "interval": 30,
     "path": "/",
-    "format": "Disk {percentage_used}%",
-    "tooltip-format": "Använt: {used} / {total}\nLedigt: {free}\nFilsystem: {path}"
-  }
+    "format": "Disk {percentage_free}%",
+    "tooltip-format": "Använt: {used} ({percentage_used}%)\nTotalt: {total}\nLedigt: {free}\nFilsystem: {path}"
+  },
+  "custom/disk-io": {
+    "exec": "python3 /home/jsv/.config/waybar/scripts/disk-io.py",
+    "return-type": "json",
+    "restart-interval": 5,
+    "min-length": 8,
+    "max-length": 8,
+    "align": 0
+  },
+  "spacing": 0
 }

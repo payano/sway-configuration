@@ -18,6 +18,12 @@ window#waybar {
   background: #285577;
 }
 
-#cpu, #memory, #disk, #clock, #tray, #custom-displays, #pulseaudio, #backlight, #network, #battery {
+#cpu, #memory, #disk, #custom-disk-io, #clock, #tray, #custom-displays, #pulseaudio, #backlight, #network, #battery {
   padding: 0 8px;
+}
+
+/* Keep the right-side statistics compact and evenly spaced. */
+#network, #cpu, #memory, #disk, #custom-disk-io, #battery {
+  padding: 0 6px;
+  margin: 0;
 }
